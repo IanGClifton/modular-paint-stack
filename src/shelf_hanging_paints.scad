@@ -43,7 +43,7 @@ module roundHoleCutOut(yDepth, diameter, thickness) {
 module paintToolShape() {
   union() {
       translate([SHELF_SUPPORT_WIDTH + (PAINT_SPACING / 2),   PAINT_FINGER_Y, 0])
-        for(i = [0 : paint_count]) {
+        for(i = [0 : paint_count - 1]) {
             X_OFFSET = (i * paint_neck_diameter) + (i * PAINT_SPACING);
       
             translate([X_OFFSET, 0, 0])
