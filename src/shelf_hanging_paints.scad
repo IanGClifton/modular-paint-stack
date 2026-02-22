@@ -41,17 +41,19 @@ module roundHoleCutOut(yDepth, diameter, thickness) {
   * from the shelf for the paints to slide in
   */
 module paintToolShape() {
-  union() {
-      translate([SHELF_SUPPORT_WIDTH + (PAINT_SPACING / 2),   PAINT_FINGER_Y, 0])
-        for(i = [0 : paint_count - 1]) {
-            X_OFFSET = (i * paint_neck_diameter) + (i * PAINT_SPACING);
-      
-            translate([X_OFFSET, 0, 0])
-                roundHoleCutOut((paint_neck_diameter / 2) + paint_support_extra_length, paint_neck_diameter, PAINT_CUT_Z);
+    union() {
+        translate([SHELF_SUPPORT_WIDTH + (PAINT_SPACING / 2), PAINT_FINGER_Y, 0]) {
+            for(i = [0 : paint_count - 1]) {
+                X_OFFSET = (i * paint_neck_diameter) + (i * PAINT_SPACING);
+                translate([X_OFFSET, 0, 0]) {
+                    roundHoleCutOut((paint_neck_diameter / 2) + paint_support_extra_length, paint_neck_diameter, PAINT_CUT_Z);
+                }
+            }
         }
 
-    translate([SHELF_SUPPORT_WIDTH + SHELF_SUPPORT_SPACING, 0, 0])
-        cube([getShelfMainWidth(shelf_gridfinity_unit_width) - (SHELF_SUPPORT_SPACING * 2), PAINT_FINGER_Y, PAINT_CUT_Z]);
+        translate([SHELF_SUPPORT_WIDTH + SHELF_SUPPORT_SPACING, 0, 0]) {
+            cube([getShelfMainWidth(shelf_gridfinity_unit_width) - (SHELF_SUPPORT_SPACING * 2), PAINT_FINGER_Y, PAINT_CUT_Z]);
+        }
     }  
 }
 
@@ -67,11 +69,11 @@ module shelfTriangles() {
     SHELF_INNER_THICKNESS = SHELF_THICKNESS + (paint_neck_height - SHELF_THICKNESS);
     
     // Defined from left to right, back to front, top to bottom
-    TRIANGLE_SUPPORT_POINTS = [
+    points = [
         // Highest two 0, 1 
         [SHELF_SUPPORT_SPACING, PAINT_FINGER_Y, SHELF_INNER_THICKNESS],
         [(PAINT_SPACING / 2), PAINT_FINGER_Y, SHELF_INNER_THICKNESS],
-        // Outside front 2
+        // Front point 2
         [SHELF_SUPPORT_SPACING, 0, SHELF_THICKNESS],
         // Lowest three 3, 4, 5
         [SHELF_SUPPORT_SPACING, PAINT_FINGER_Y, 0],
@@ -79,18 +81,21 @@ module shelfTriangles() {
         [SHELF_SUPPORT_SPACING, 0, 0],
     ];
     
-    TRIANGLE_SUPPORT_FACES = [
+    faces = [
         [0, 1, 2],    // Top triangle
         [0, 2, 5, 3], // Outside rectangle
         [2, 1, 4, 5], // Inner rectangle
-        [1, 4, 3, 0], // Back rectangle
+        [1, 0, 3, 4], // Back rectangle
         [5, 4, 3],    // Bottom triangle
-     ];
-    translate([SHELF_SUPPORT_WIDTH, 0, 0])
-        polyhedron(points = TRIANGLE_SUPPORT_POINTS, faces = TRIANGLE_SUPPORT_FACES);
-    translate([getShelfFullWidth(shelf_gridfinity_unit_width) - SHELF_SUPPORT_WIDTH, 0, 0])
-        mirror([1, 0, 0])
-            polyhedron(points = TRIANGLE_SUPPORT_POINTS, faces = TRIANGLE_SUPPORT_FACES);
+    ];
+    translate([SHELF_SUPPORT_WIDTH, 0, 0]) {
+        polyhedron(points, faces);
+    }
+    translate([getShelfFullWidth(shelf_gridfinity_unit_width) - SHELF_SUPPORT_WIDTH, 0, 0]) {
+        mirror([1, 0, 0]) {
+            polyhedron(points, faces);
+        }
+    }
 }
 
 /**
