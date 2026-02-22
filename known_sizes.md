@@ -35,7 +35,7 @@ Note: Liquitex paints are stored standing rather than hanging.
 |----------------------------------|------|---------------|-------------|
 | Professional Designer's Gouache* | 15ml | 12mm          | 3.8mm       |
 
-### Smincke
+### Schmincke
 
 | Line             | Size | Neck diameter | Neck height |
 |------------------|------|---------------|-------------|
