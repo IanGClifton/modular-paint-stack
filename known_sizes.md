@@ -4,9 +4,9 @@ Note: Any paint lines with an asterisk have a measurement taken but print verifi
 
 ### Charvin
 
-| Line                | Size | Neck diameter | Neck height |
-|---------------------|------|---------------|-------------|
-| Extra Fine Acrylic* | 20ml | 12.9mm        | 4.0mm       |
+| Line               | Size | Neck diameter | Neck height |
+|--------------------|------|---------------|-------------|
+| Extra Fine Acrylic | 20ml | 12.9mm        | 4.0mm       |
 
 ### Golden
 
@@ -31,15 +31,15 @@ Note: Liquitex paints are stored standing rather than hanging.
 
 ### ShinHan
 
-| Line                             | Size | Neck diameter | Neck height |
-|----------------------------------|------|---------------|-------------|
-| Professional Designer's Gouache* | 15ml | 12mm          | 3.8mm       |
+| Line                            | Size | Neck diameter | Neck height |
+|---------------------------------|------|---------------|-------------|
+| Professional Designer's Gouache | 15ml | 12mm          | 3.8mm       |
 
 ### Schmincke
 
-| Line             | Size | Neck diameter | Neck height |
-|------------------|------|---------------|-------------|
-| Horadam Gouache* | 15ml | 8.5mm         | 3.2mm       |
+| Line            | Size | Neck diameter | Neck height |
+|-----------------|------|---------------|-------------|
+| Horadam Gouache | 15ml | 8.5mm         | 2.7mm       |
 
 ### Winsor & Newton
 
@@ -49,7 +49,7 @@ Note: Liquitex paints are stored standing rather than hanging.
 | Galeria Acrylic      | 200ml | 20.8mm        | 4.8mm       |
 | Professional Acrylic | 60ml  | 13.4mm        | 3.0mm       |
 | Professional Acrylic | 200ml | 20.8mm        | 4.8mm       |
-| Designers Gouache*   | 14ml  | 13.2mm        | 3.0mm       |
-| Designers Gouache*   | 37ml  | 13.2mm        | 3.0mm       |
+| Designers Gouache    | 14ml  | 13.2mm        | 3.0mm       |
+| Designers Gouache    | 37ml  | 13.2mm        | 3.0mm       |
 
 
