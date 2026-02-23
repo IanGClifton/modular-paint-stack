@@ -9,9 +9,13 @@ dovetail_clearance = 0.10;
 // True to add brackets for a shelf on the top
 shelf_brackets_on_top = true;
 // True to add brackets for a shelf on the bottom
-shelf_brackets_on_bottom = true;
+shelf_brackets_on_bottom = false;
 // How many mm to raise the bottom backets
 shelf_brackets_bottom_offset = 0;
+// Whether to generate the left piece
+print_left = true;
+// Whether to generate the right piece
+print_right = true;
 
 include <dovetail.scad>
 
@@ -152,5 +156,9 @@ module rightSide() {
             leftSide();
 }
 
-leftSide();
-rightSide();
+if (print_left) {
+    leftSide();
+}
+if (print_right) {
+    rightSide();
+}
