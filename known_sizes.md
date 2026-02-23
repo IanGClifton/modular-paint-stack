@@ -1,6 +1,6 @@
 ## Known sizes
 
-Note: Any paint lines with an asterisk have a measurement taken but print verification is pending.
+The following are sizes that have been printed and verified for various brands/lines of paint.
 
 ### Charvin
 
@@ -19,15 +19,14 @@ Note: Any paint lines with an asterisk have a measurement taken but print verifi
 
 Note: Liquitex paints are stored standing rather than hanging.
 
-| Line                | Size  | Cap diameter | Cap height |
-|---------------------|-------|--------------|------------|
-| Heavy Body Acrylic* | 59ml  | 29.5mm       | 14.8mm     |
-| Heavy Body Acrylic* | 138ml | 38.5mm       | 19.2mm     |
+| Line               | Size  | Cap diameter | Cap height |
+|--------------------|-------|--------------|------------|
+| Heavy Body Acrylic | 59ml  | 29.5mm       | 14.8mm     |
+| Heavy Body Acrylic | 138ml | 39.5mm       | 19.2mm     |
 
 | Line               | Size  | Diameter | Recommended height |
 |--------------------|-------|----------|--------------------|
-| Soft Body Acrylic* | 59ml  | 40mm     | 20mm               | 
-| Soft Body Acrylic* | 237ml | 57.2mm   | 20mm               |
+| Soft Body Acrylic  | 59ml  | 41mm     | 20mm               | 
 
 ### ShinHan
 
