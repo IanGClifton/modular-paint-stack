@@ -40,7 +40,7 @@ module front(width, depth, height) {
     }
 }
 
-module back(width, depth, height) {
+module back(width, depth, height, includeTopTriangle) {
     union() {
         cube([width, depth, height]);
         translate([0, depth, 0])
@@ -48,28 +48,30 @@ module back(width, depth, height) {
         translate([width - SIDE_X, depth, 0])
             dovetailSlot(height);
 
-        // Hide the top gap with a triangle
-        triangleWidth = width - (2 * SIDE_X);
-        triangleHeight = 5;
-        points = [
-            // Left
-            [0, 0, triangleHeight],               // 0 Top front
-            [0, DOVETAIL_YDEPTH, triangleHeight], // 1 Top back
-            [0, 0, 0],                            // 2 Bottom front
-            // Right
-            [triangleWidth, 0, triangleHeight],               // 3 Top front
-            [triangleWidth, DOVETAIL_YDEPTH, triangleHeight], // 4 Top back
-            [triangleWidth, 0, 0],                            // 5 Bottom front
-        ];
-        faces = [
-            [0, 2, 1],    // Left
-            [0, 3, 5, 2], // Front
-            [4, 1, 2, 5], // Back angle
-            [3, 4, 5],    // Right
-            [3, 0, 1, 4]  // Top
-        ];
-        translate([SIDE_X, depth, height - triangleHeight])
-            polyhedron(points, faces);
+        if (includeTopTriangle) {
+            // Hide the top gap with a triangle
+            triangleWidth = width - (2 * SIDE_X);
+            triangleHeight = 5;
+            points = [
+                // Left
+                [0, 0, triangleHeight],               // 0 Top front
+                [0, DOVETAIL_YDEPTH, triangleHeight], // 1 Top back
+                [0, 0, 0],                            // 2 Bottom front
+                // Right
+                [triangleWidth, 0, triangleHeight],               // 3 Top front
+                [triangleWidth, DOVETAIL_YDEPTH, triangleHeight], // 4 Top back
+                [triangleWidth, 0, 0],                            // 5 Bottom front
+            ];
+            faces = [
+                [0, 2, 1],    // Left
+                [0, 3, 5, 2], // Front
+                [4, 1, 2, 5], // Back angle
+                [3, 4, 5],    // Right
+                [3, 0, 1, 4]  // Top
+            ];
+            translate([SIDE_X, depth, height - triangleHeight])
+                polyhedron(points, faces);
+        }
     }
 }
 
@@ -155,7 +157,8 @@ translate([-(FULL_WIDTH / 2), 0, 0]) {
                     back(
                         width = FULL_WIDTH,
                         depth = back_thickness,
-                        height = back_height
+                        height = back_height,
+                        includeTopTriangle = (cutout_shape_back == CUTOUT_SHAPE_NONE)
                     );
                     cutoutShapeBack();
                 }
