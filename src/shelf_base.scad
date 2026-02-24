@@ -11,16 +11,20 @@ include <constants.scad>
   * but the top of the shelf is flat with no cutouts for
   * paints, brushes, etc.
   */
-module uniformShelf(gridfinityWidth) {
-    union() {
-        // Shelf main
-        cube([getShelfFullWidth(gridfinityWidth), GRIDFINITY_DIMENSION, SHELF_THICKNESS]);
-        
-        // Support on each end
-        shelfSupport();
-        translate([getShelfFullWidth(gridfinityWidth), 0, 0])
-            mirror([1, 0, 0])
+module uniformShelf(gridfinityWidth, gridfinityDepth = 1) {
+    for (i = [0 : gridfinityDepth - 1]) {
+        translate([0, GRIDFINITY_DIMENSION * i, 0]) {
+            union() {
+                // Shelf main
+                cube([getShelfFullWidth(gridfinityWidth), GRIDFINITY_DIMENSION, SHELF_THICKNESS]);
+                
+                // Support on each end
                 shelfSupport();
+                translate([getShelfFullWidth(gridfinityWidth), 0, 0])
+                    mirror([1, 0, 0])
+                        shelfSupport();
+            }
+        }
     }
 }
 
@@ -31,22 +35,22 @@ module uniformShelf(gridfinityWidth) {
   * would go, allowing the thickness of this part of the shelf
   * to match the paint neck height.
   */
-module thicknessAdjustedShelf(gridfinityWidth, targetThickness) {
+module thicknessAdjustedShelf(gridfinityWidth, targetThickness, gridfinityDepth = 1) {
     if (targetThickness == SHELF_THICKNESS) {
-        uniformShelf(gridfinityWidth);
+        uniformShelf(gridfinityWidth, gridfinityDepth);
     } else if (targetThickness > SHELF_THICKNESS) {
         // Thicken the shelf
         union() {
-            uniformShelf(gridfinityWidth);
+            uniformShelf(gridfinityWidth, gridfinityDepth);
             translate([SHELF_SUPPORT_WIDTH + SHELF_SUPPORT_SPACING, 0, SHELF_THICKNESS])
-                cube([getShelfMainWidth(gridfinityWidth) - (SHELF_SUPPORT_SPACING * 2), GRIDFINITY_DIMENSION, targetThickness - SHELF_THICKNESS]);
+                cube([getShelfMainWidth(gridfinityWidth) - (SHELF_SUPPORT_SPACING * 2), GRIDFINITY_DIMENSION * gridfinityDepth, targetThickness - SHELF_THICKNESS]);
         }
     } else {
         // Thin the shelf
         difference() {
-            uniformShelf(gridfinityWidth);
+            uniformShelf(gridfinityWidth, gridfinityDepth);
             translate([SHELF_SUPPORT_WIDTH + SHELF_SUPPORT_SPACING, 0, targetThickness])
-                cube([getShelfMainWidth(gridfinityWidth) - (SHELF_SUPPORT_SPACING * 2), GRIDFINITY_DIMENSION, SHELF_THICKNESS - targetThickness]);
+                cube([getShelfMainWidth(gridfinityWidth) - (SHELF_SUPPORT_SPACING * 2), GRIDFINITY_DIMENSION * gridfinityDepth, SHELF_THICKNESS - targetThickness]);
         }
     }
 }
