@@ -44,10 +44,11 @@ module cylinderCutOuts(shelfMainWidth, cylinderDiameter, cylinderHeight, cylinde
     xOffset = SHELF_SUPPORT_WIDTH + (holeSpacing / 2) + (cylinderDiameter / 2);
     radius1 = (cylinderDiameter / 2) + hole_variance;
     radius2 = (cylinderDiameter / 2);
+    zExtension = 0.1;
     translate([xOffset, 0, 0]) {
         for (i = [0 : cylinderCount - 1]) {
-            translate([(holeSpacing + cylinderDiameter) * i, 0, 0]) {
-                cylinder(h = cylinderHeight + 1, r1 = radius1, r2 = radius2, $fn=CIRCLE_RESOLUTION);
+            translate([(holeSpacing + cylinderDiameter) * i, 0, -zExtension]) {
+                cylinder(h = cylinderHeight + (2 * zExtension), r1 = radius1, r2 = radius2, $fn=CIRCLE_RESOLUTION);
             }
         }
     }
