@@ -14,9 +14,9 @@ front_thickness = 4;
 back_height = 100;
 // mm thickness of the back piece
 back_thickness = 4;
-// Cutout (0 = none, 1 = oval, 2 = rectange, 3 = angled rectangle)
+// Cutout (0 = none, 1 = oval, 2 = rectangle, 3 = angled rectangle)
 cutout_shape_front = 1;
-// Cutout (0 = none, 1 = oval, 2 = rectange, 3 = angled rectangle)
+// Cutout (0 = none, 1 = oval, 2 = rectangle, 3 = angled rectangle)
 cutout_shape_back = 0;
 // mm offset to make the dovetail fit (0.05 = extremely tight, 0.10 = tight)
 dovetail_clearance = 0.10;
