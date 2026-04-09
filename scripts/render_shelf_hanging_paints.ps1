@@ -20,8 +20,8 @@ $Brands = @(
     @{ Name = "schmincke horadam gouache 15ml";              NeckHeight = 2.7;  NeckDiameter = 8.5;  SupportExtraLen = 8; PaintCountOffsets = @(0, 1, 2) },
     @{ Name = "winsor & newton designers gouache 14ml";      NeckHeight = 3.0;  NeckDiameter = 13.2; SupportExtraLen = 8; PaintCountOffsets = @(0, 1, 2) },
     @{ Name = "winsor & newton designers gouache 37ml";      NeckHeight = 3.0;  NeckDiameter = 13.2; SupportExtraLen = 8; PaintCountOffsets = @(0, 1)    },
-    @{ Name = "winsor & newton galleria acrylic 60ml";       NeckHeight = 6.0;  NeckDiameter = 16.8; SupportExtraLen = 4; PaintCountOffsets = @(0, 1)    },
-    @{ Name = "winsor & newton galleria acrylic 200ml";      NeckHeight = 4.8;  NeckDiameter = 20.8; SupportExtraLen = 2; PaintCountOffsets = @(0)        },
+    @{ Name = "winsor & newton galeria acrylic 60ml";       NeckHeight = 6.0;  NeckDiameter = 16.8; SupportExtraLen = 4; PaintCountOffsets = @(0, 1)    },
+    @{ Name = "winsor & newton galeria acrylic 200ml";      NeckHeight = 4.8;  NeckDiameter = 20.8; SupportExtraLen = 2; PaintCountOffsets = @(0)        },
     @{ Name = "winsor & newton professional acrylic 60ml";   NeckHeight = 3.0;  NeckDiameter = 13.8; SupportExtraLen = 4; PaintCountOffsets = @(0, 1)    },
     @{ Name = "winsor & newton professional acrylic 200ml";  NeckHeight = 4.8;  NeckDiameter = 20.8; SupportExtraLen = 2; PaintCountOffsets = @(0)        }
 )
