@@ -39,7 +39,8 @@ Write-Host ""
 
 # ── Variable values ───────────────────────────────────────────────────────────
 
-$GfuWidths = @(3, 4, 5)
+$GfuWidths   = @(3, 4, 5)
+$TopInsets   = @($false, $true)
 # cylinder_count always matches shelf_gridfinity_unit_width
 
 # ── Preflight checks ──────────────────────────────────────────────────────────
@@ -58,31 +59,38 @@ New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
-$total   = $GfuWidths.Count   # 3 widths, 1 paint count each = 3
+$total   = $GfuWidths.Count * $TopInsets.Count   # 3 widths × 2 inset variants = 6
 $current = 0
 
 foreach ($gfu in $GfuWidths) {
-    $current++
     $paintCount = $gfu
 
-    $fileName = "shelf $PaintBrand ${gfu}gfu ${paintCount}pc $Version-$DateStamp.stl"
-    $outPath  = Join-Path $OutputDir $fileName
+    foreach ($topInset in $TopInsets) {
+        $current++
 
-    $args = @(
-        "-D", "shelf_gridfinity_unit_width=$gfu",
-        "-D", "cylinder_height=$CylinderHeight",
-        "-D", "cylinder_diameter=$CylinderDiameter",
-        "-D", "cylinder_count=$paintCount",
-        "-o", $outPath,
-        $ScadFile
-    )
+        $sidesLabel   = if ($topInset) { "slanted sides" } else { "straight sides" }
+        $topInsetScad = if ($topInset) { "true" } else { "false" }
 
-    Write-Host "[$current/$total]" -NoNewline -ForegroundColor Cyan
-    Write-Host " Rendering: $fileName"
-    & $OpenScadExe $args
+        $fileName = "shelf $PaintBrand ${gfu}gfu ${paintCount}pc $sidesLabel $Version-$DateStamp.stl"
+        $outPath  = Join-Path $OutputDir $fileName
 
-    if ($LASTEXITCODE -ne 0) {
-        Write-Warning "  OpenSCAD exited with code $LASTEXITCODE for: $fileName"
+        $args = @(
+            "-D", "shelf_gridfinity_unit_width=$gfu",
+            "-D", "cylinder_height=$CylinderHeight",
+            "-D", "cylinder_diameter=$CylinderDiameter",
+            "-D", "cylinder_count=$paintCount",
+            "-D", "top_inset=$topInsetScad",
+            "-o", $outPath,
+            $ScadFile
+        )
+
+        Write-Host "[$current/$total]" -NoNewline -ForegroundColor Cyan
+        Write-Host " Rendering: $fileName"
+        & $OpenScadExe $args
+
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "  OpenSCAD exited with code $LASTEXITCODE for: $fileName"
+        }
     }
 }
 

@@ -10,13 +10,15 @@ cylinder_height = 14.8;
 cylinder_diameter = 29.5;
 // How many cutouts to include
 cylinder_count = 3;
+// Whether the top should be inset (slanted in) or flat (perfectly vertical)
+top_inset = true;
 
 include <shelf_base.scad>
 
 /**
   * Creates a solid trapezoid that will be cut into for the paints
   */
-module standingPaintSupport(gridfinityUnits, height) {
+module standingPaintSupport(gridfinityUnits, height, upperInset) {
     fullShelfWidth = getShelfFullWidth(gridfinityUnits);
     points = [
         // Base points
@@ -25,10 +27,10 @@ module standingPaintSupport(gridfinityUnits, height) {
         [0, 0, 0],                                 // 2 BL
         [fullShelfWidth, 0, 0],                    // 3 BR
         // Extended points
-        [SHELF_SUPPORT_WIDTH, GRIDFINITY_DIMENSION, -height],                  // 4 TL
-        [fullShelfWidth - SHELF_SUPPORT_WIDTH, GRIDFINITY_DIMENSION, -height], // 5 TR
-        [SHELF_SUPPORT_WIDTH, 0, -height],                                     // 6 BL
-        [fullShelfWidth - SHELF_SUPPORT_WIDTH, 0, -height],                    // 7 BR
+        [upperInset, GRIDFINITY_DIMENSION, -height],                  // 4 TL
+        [fullShelfWidth - upperInset, GRIDFINITY_DIMENSION, -height], // 5 TR
+        [upperInset, 0, -height],                                     // 6 BL
+        [fullShelfWidth - upperInset, 0, -height],                    // 7 BR
         
     ];
     faces = [
@@ -62,17 +64,17 @@ module cylinderCutOuts(shelfMainWidth, cylinderDiameter, cylinderHeight, cylinde
 /**
   * Creates a shelf with support for standing paints and cylinders cut out
   */
-module standingPaintShelf(gridfinityUnits, supportHeight, cylinderDiameter, cylinderCount) {
+module standingPaintShelf(gridfinityUnits, supportHeight, cylinderDiameter, cylinderCount, inset) {
+    upperInset = inset ? SHELF_SUPPORT_WIDTH : 0;
     difference() {
         union() {
             uniformShelf(gridfinityUnits);
-            standingPaintSupport(gridfinityUnits, supportHeight);
-
+            standingPaintSupport(gridfinityUnits, supportHeight, upperInset);
         }
         cylinderCutOuts(getShelfMainWidth(gridfinityUnits), cylinderDiameter, supportHeight, cylinderCount);
     }
 }
 
 translate([-(getShelfFullWidth(shelf_gridfinity_unit_width) / 2), -(GRIDFINITY_DIMENSION / 2), cylinder_height]) {
-    standingPaintShelf(shelf_gridfinity_unit_width, cylinder_height, cylinder_diameter, cylinder_count);
+    standingPaintShelf(shelf_gridfinity_unit_width, cylinder_height, cylinder_diameter, cylinder_count, top_inset);
 }
