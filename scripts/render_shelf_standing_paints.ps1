@@ -11,9 +11,9 @@ $Version     = "v1"
 # ── Brand menu ────────────────────────────────────────────────────────────────
 
 $Brands = @(
-    @{ Name = "liquitex heavy body acrylic 59ml";  CylinderHeight = 14.8; CylinderDiameter = 29.5 },
-    @{ Name = "liquitex heavy body acrylic 138ml"; CylinderHeight = 19.2; CylinderDiameter = 39.5 },
-    @{ Name = "liquitex soft body acrylic 59ml";   CylinderHeight = 20;   CylinderDiameter = 41   }
+    @{ Name = "liquitex heavy body acrylic 59ml";  CylinderHeight = 14.8; CylinderDiameter = 29.5; ReducedPaintCount = $false },
+    @{ Name = "liquitex heavy body acrylic 138ml"; CylinderHeight = 19.2; CylinderDiameter = 39.5; ReducedPaintCount = $true  },
+    @{ Name = "liquitex soft body acrylic 59ml";   CylinderHeight = 20;   CylinderDiameter = 41;   ReducedPaintCount = $false }
 )
 
 Write-Host ""
@@ -28,10 +28,11 @@ do {
     $selection = $raw -as [int]
 } while ($null -eq $selection -or $selection -lt 1 -or $selection -gt $Brands.Count)
 
-$chosen           = $Brands[$selection - 1]
-$PaintBrand       = $chosen.Name
-$CylinderHeight   = $chosen.CylinderHeight
-$CylinderDiameter = $chosen.CylinderDiameter
+$chosen             = $Brands[$selection - 1]
+$PaintBrand         = $chosen.Name
+$CylinderHeight     = $chosen.CylinderHeight
+$CylinderDiameter   = $chosen.CylinderDiameter
+$ReducedPaintCount  = $chosen.ReducedPaintCount
 
 Write-Host ""
 Write-Host "Generating STLs for: $PaintBrand" -ForegroundColor Green
@@ -59,37 +60,40 @@ New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
-$total   = $GfuWidths.Count * $TopInsets.Count   # 3 widths × 2 inset variants = 6
+$paintCountsPerWidth = if ($ReducedPaintCount) { 2 } else { 1 }
+$total   = $GfuWidths.Count * $TopInsets.Count * $paintCountsPerWidth   # widths × inset variants × paint count variants
 $current = 0
 
 foreach ($gfu in $GfuWidths) {
-    $paintCount = $gfu
+    $paintCounts = if ($ReducedPaintCount) { @(([int]$gfu - 1), $gfu) } else { @($gfu) }
 
-    foreach ($topInset in $TopInsets) {
-        $current++
+    foreach ($paintCount in $paintCounts) {
+        foreach ($topInset in $TopInsets) {
+            $current++
 
-        $sidesLabel   = if ($topInset) { "slanted sides" } else { "straight sides" }
-        $topInsetScad = if ($topInset) { "true" } else { "false" }
+            $sidesLabel   = if ($topInset) { "slanted sides" } else { "straight sides" }
+            $topInsetScad = if ($topInset) { "true" } else { "false" }
 
-        $fileName = "shelf $PaintBrand ${gfu}gfu ${paintCount}pc $sidesLabel $Version-$DateStamp.stl"
-        $outPath  = Join-Path $OutputDir $fileName
+            $fileName = "shelf $PaintBrand ${gfu}gfu ${paintCount}pc $sidesLabel $Version-$DateStamp.stl"
+            $outPath  = Join-Path $OutputDir $fileName
 
-        $args = @(
-            "-D", "shelf_gridfinity_unit_width=$gfu",
-            "-D", "cylinder_height=$CylinderHeight",
-            "-D", "cylinder_diameter=$CylinderDiameter",
-            "-D", "cylinder_count=$paintCount",
-            "-D", "top_inset=$topInsetScad",
-            "-o", $outPath,
-            $ScadFile
-        )
+            $args = @(
+                "-D", "shelf_gridfinity_unit_width=$gfu",
+                "-D", "cylinder_height=$CylinderHeight",
+                "-D", "cylinder_diameter=$CylinderDiameter",
+                "-D", "cylinder_count=$paintCount",
+                "-D", "top_inset=$topInsetScad",
+                "-o", $outPath,
+                $ScadFile
+            )
 
-        Write-Host "[$current/$total]" -NoNewline -ForegroundColor Cyan
-        Write-Host " Rendering: $fileName"
-        & $OpenScadExe $args
+            Write-Host "[$current/$total]" -NoNewline -ForegroundColor Cyan
+            Write-Host " Rendering: $fileName"
+            & $OpenScadExe $args
 
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "  OpenSCAD exited with code $LASTEXITCODE for: $fileName"
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "  OpenSCAD exited with code $LASTEXITCODE for: $fileName"
+            }
         }
     }
 }
