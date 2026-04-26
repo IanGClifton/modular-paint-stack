@@ -2,80 +2,110 @@
 // Apache 2.0 license
 // https://github.com/IanGClifton/modular-paint-stack
 
-holes_to_test = [
-    5.0,
-    5.5,
-    6.0,
-    6.5,
-    7.0,
-    7.5,
-    8.0,
-    8.5,
-    9.0,
-    9.5,
-    10.0,
-    10.5,
-    11.0,
-    11.5,
-    12.0,
-    12.5,
-    13.0,
-    13.5,
-    14.0
-];
+// ============================================================
+// Paintbrush Handle Hole Gauge
+// ============================================================
+// Prints a 3mm thick rectangle with holes sized from
+// start_hole_diameter to end_hole_diameter in 0.5mm steps.
+// Each hole is labeled with its diameter (no units).
+// ============================================================
 
-distance_between_holes = 2;
-shelf_thickness = 3;
-hole_variance = 0.1;
+// --- User-configurable constants ---
+start_hole_diameter = 5.0;    // Diameter of the smallest hole (mm)
+end_hole_diameter   = 14.0;   // Diameter of the largest hole (mm)
 
-CIRCLE_RESOLUTION = 100;
-FONT_SIZE = 2;
-FONT_HEIGHT = 0.4;
+// --- Fixed constants ---
+THICKNESS          = 3.0;    // Plate thickness (mm)
+HOLE_SPACING       = 2.0;    // Gap between edges of adjacent holes (mm)
+CIRCLE_RESOLUTION  = 100;    // $fn for cylinders
+Z_EXTENSION        = 0.1;    // Extra z on each side to avoid z-fighting
+STEP               = 0.5;    // How much to increase the hole diameter each iteration (mm)
 
-function sum(v) = [ for (p = v) 1 ] * v;
-function slice(v, size) = [ for(i = [0 : size - 1]) v[i] ];
-function sumOfPreviousValues(v, index) = (index == 0) ? 0 : sum(slice(v, index));
+// --- Label constants ---
+LABEL_SIZE   = (start_hole_diameter * 0.55 < 1.2) ? 1.2 : start_hole_diameter * 0.55;
+LABEL_DEPTH  = THICKNESS / 2;
+LABEL_OFFSET = 0.3;
 
-module createTestPiece(holesArray, spacing, thickness) {
-    sum = sum(holesArray);
-    largestHole = max(holesArray);
-    xDimension = sum(holesArray) + ((len(holesArray) + 1) * spacing);
-    yDimension = largestHole + (spacing * 2);
-    zExtension = 0.1;
+// Number of holes
+function num_holes() =
+    round((end_hole_diameter - start_hole_diameter) / STEP) + 1;
 
-    union() {
-        difference() {
-            cube([xDimension, yDimension, thickness]);
-            translate([spacing, largestHole / 2 + spacing, 0]) {
-                for (i = [0 : len(holesArray) - 1]) {
-                    holesSizeSoFar = sumOfPreviousValues(holesArray, i);
-                    spacingSoFar = spacing * i;
-                    radius1 = (holesArray[i] / 2) + hole_variance;
-                    radius2 = (holesArray[i] / 2);
+// Diameter of hole at index i
+function hole_dia(i) = start_hole_diameter + i * STEP;
 
-                    translate([holesSizeSoFar + spacingSoFar + radius2, 0, -zExtension]) {
-                        cylinder(h = thickness + (2 * zExtension), r1 = radius1, r2 = radius2, $fn=CIRCLE_RESOLUTION);                
-                    }
-                }
-            }
-        }
-        translate([spacing, 0, thickness]) {
-            for (i = [0 : len(holesArray) - 1]) {
-                holesSizeSoFar = sumOfPreviousValues(holesArray, i);
-                spacingSoFar = spacing * i;
-                radius = (holesArray[i] / 2);
-                translate([holesSizeSoFar + spacingSoFar + radius, 0, -zExtension]) {
-                    linear_extrude(height = FONT_HEIGHT) {
-                        text(str(holesArray[i]), size = FONT_SIZE, font = "Arial:style=Regular", halign = "center", valign = "bottom");
-                    }
-                }
-            }
+// X center of hole at index i (holes laid out left-to-right)
+// Each hole occupies: its own radius on the left side, the spacing,
+// the previous hole's radius on the right — accumulated.
+function hole_center_x(i) =
+    (i == 0)
+        ? (hole_dia(0) / 2) + HOLE_SPACING
+        : hole_center_x(i - 1)
+          + hole_dia(i - 1) / 2    // right edge of previous hole
+          + HOLE_SPACING           // gap
+          + hole_dia(i) / 2;       // left half of current hole
+
+// Width of the plate is sum of all holes + spacing
+function plate_width() =
+    (hole_center_x(num_holes() - 1) + hole_dia(num_holes() - 1) / 2) + HOLE_SPACING;
+
+// Height of the plate — tall enough so the largest hole fits with spacing,
+// plus room below for the label text and its gap from the hole edge.
+function plate_height() =
+    end_hole_diameter + HOLE_SPACING      // top spacing + hole + bottom spacing above label
+    + LABEL_OFFSET + LABEL_SIZE           // gap + label height
+    + HOLE_SPACING;                       // margin below the label
+
+// ============================================================
+// Main model
+// ============================================================
+module brush_gauge() {
+    n = num_holes();
+    w = plate_width();
+    h = plate_height();
+
+    difference() {
+        // Base plate
+        cube([w, h, THICKNESS]);
+
+        // Cut holes + labels
+        for (i = [0 : n - 1]) {
+            dia    = hole_dia(i);
+            radius = dia / 2;
+            cx     = hole_center_x(i);
+            // Push the hole center up so there's equal spacing above the hole
+            // and the label sits in the extra space at the bottom.
+            label_area = LABEL_OFFSET + LABEL_SIZE + HOLE_SPACING;
+            cy = (h + label_area) / 2;
+
+            // --- Cylinder hole ---
+            translate([cx, cy, -Z_EXTENSION])
+                cylinder(
+                    h  = THICKNESS + (2 * Z_EXTENSION),
+                    r1 = radius,
+                    r2 = radius,
+                    $fn = CIRCLE_RESOLUTION
+                );
+
+            // --- Label (cut into the bottom face) ---
+            label_str = (dia == floor(dia))
+                ? str(floor(dia))   // "6" instead of "6.5"-style for whole numbers
+                : str(dia);
+
+            // Center the label below the hole
+            label_y = cy - radius - LABEL_OFFSET - LABEL_SIZE;
+
+            translate([cx, label_y, THICKNESS - LABEL_DEPTH])
+                linear_extrude(height = LABEL_DEPTH)
+                    text(
+                        label_str,
+                        size    = LABEL_SIZE,
+                        halign  = "center",
+                        valign  = "top",
+                        font    = "Liberation Sans:style=Bold"
+                    );
         }
     }
 }
 
-createTestPiece(
-    holesArray = holes_to_test,
-    spacing = distance_between_holes,
-    thickness = shelf_thickness
-);
+brush_gauge();
+
