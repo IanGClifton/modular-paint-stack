@@ -3,7 +3,7 @@
 // https://github.com/IanGClifton/modular-paint-stack
 
 // Gridfinity units (42mm each) to make the width of the inner shelf part  
-shelf_gridfinity_unit_width = 3;
+shelf_gridfinity_unit_width = 5;
 
 // The following would be better as an array of array pairs,
 // but makerworld.com doesn't seem to support that well in the GUI
@@ -91,4 +91,6 @@ module shelfWithPaintCutouts(
     }
 }
 
-shelfWithPaintCutouts(shelf_gridfinity_unit_width, hole_diameter_and_count);
+translate([-getShelfFullWidth(shelf_gridfinity_unit_width) / 2, -GRIDFINITY_DIMENSION / 2, 0]) {
+    shelfWithPaintCutouts(shelf_gridfinity_unit_width, hole_diameter_and_count);
+}
